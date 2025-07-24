@@ -1,0 +1,22 @@
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+
+# Ignore environment files
+backend/.env
+
+# Ignore Node.js dependencies
+frontend/node_modules/
+
+# Ignore build files
+frontend/dist/
+
+# Ignore system files
+.DS_Store
+
+# Ignore logs
+*.log
+
+# Ignore virtual environments
+venv/
+.env/
