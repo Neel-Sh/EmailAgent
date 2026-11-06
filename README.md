@@ -1,106 +1,52 @@
 # Email Agent
 
-A modern AI-powered email management system that can read, summarize, and compose emails using OpenAI.
+A Python/Flask prototype for Gmail reading and AI-assisted email summaries and drafts, with a static HTML/JavaScript interface.
 
-## Features
+## Current status
 
-- 📧 Read and display recent emails
-- 📝 AI-powered email summaries
-- ✍️ Compose emails from natural language prompts
-- 🎨 Modern, responsive web interface
-- 🔒 Secure Gmail integration
+The backend and frontend are **not yet integrated into a working end-to-end app**. The frontend calls `/api/chat`, `/api/send-email`, and `/api/get-full-email`, while the backend provides separate `/api/emails/...` routes. The frontend also uses its own origin for API requests, and Flask does not serve its files. There is no React project, `package.json`, or `npm run dev` command in this repository.
 
-## Setup Instructions
+## Backend setup
 
-### Prerequisites
-
-- Python 3.8+
-- Node.js 16+
-- Gmail account
-- OpenAI API key
-
-### 1. Gmail Setup
-
-1. Enable 2-Factor Authentication on your Gmail account
-2. Generate an App Password:
-   - Go to Google Account settings
-   - Security → 2-Step Verification → App passwords
-   - Generate password for "Mail"
-   - Save this password for later
-
-### 2. OpenAI Setup
-
-1. Get your OpenAI API key from https://platform.openai.com/api-keys
-2. Save this key for later
-
-### 3. Installation
-
-1. Clone and setup backend:
-```bash
-cd backend
-pip install -r requirements.txt
-```
-
-2. Setup frontend:
-```bash
-cd frontend
-npm install
-```
-
-3. Create environment file:
-```bash
+```sh
+git clone https://github.com/Neel-Sh/EmailAgent.git
+cd EmailAgent
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r backend/requirements.txt
 cp backend/config_template.env backend/.env
 ```
 
-4. Edit `backend/.env` with your credentials:
-```
-GMAIL_EMAIL=your-email@gmail.com
-GMAIL_PASSWORD=your-app-password
-OPENAI_API_KEY=your-openai-api-key
-```
+Fill the ignored `.env` with `GMAIL_EMAIL`, `GMAIL_PASSWORD` (a Gmail app password), and `OPENAI_API_KEY`. Credential availability and account access must be configured separately. Never commit populated credentials.
 
-### 4. Running the Application
+Start the API bound to the local machine:
 
-1. Start the backend:
-```bash
+```sh
 cd backend
-python app.py
+python -m flask --app app run --host 127.0.0.1 --port 5000
 ```
 
-2. Start the frontend:
-```bash
-cd frontend
-npm run dev
+`GET /api/health` checks that Flask is serving; it does not verify credentials or model access. AI code currently names `gpt-3.5-turbo`; availability for a particular account is not established by a successful local start.
+
+## Frontend preview
+
+From the repository root, in another terminal:
+
+```sh
+python3 -m http.server 3000 --bind 127.0.0.1 --directory frontend
 ```
 
-3. Open http://localhost:3000 in your browser
+Open [localhost:3000](http://localhost:3000) to inspect the interface. The route/origin mismatches above must be resolved before its email actions work.
 
-## Project Structure
+## Data flow
 
-```
-EmailAgent/
-├── backend/           # Python Flask API
-│   ├── app.py        # Main Flask application
-│   ├── email_service.py  # Email handling logic
-│   ├── ai_service.py     # OpenAI integration
-│   └── requirements.txt  # Python dependencies
-├── frontend/         # React web interface
-│   ├── src/
-│   │   ├── components/   # React components
-│   │   ├── pages/       # Page components
-│   │   └── styles/      # CSS styles
-│   └── package.json     # Node dependencies
-└── README.md
-```
+Gmail access uses IMAP/SMTP, and summaries or draft prompts are sent to OpenAI. This is not an offline mail client. The backend has no application authentication layer; treat it as a local prototype. Review drafts and recipients before using any send endpoint.
 
-## Usage
+## Project layout
 
-1. **View Recent Emails**: See your latest emails with AI-generated summaries
-2. **Compose Email**: Use natural language to compose and send emails
-3. **Daily Summary**: Get an AI summary of your important emails
+- `backend/app.py`: Flask routes.
+- `backend/email_service.py`: mailbox reads and sending.
+- `backend/ai_service.py`: summary, composition, and analysis requests.
+- `frontend/`: plain HTML, CSS, and JavaScript.
 
-## Security Notes
-
-- App passwords are stored locally in .env file
-- Never commit .env file to version control
-- The application runs locally on your machine 
+See [Contributing](CONTRIBUTING.md). No repository-wide license file is included.
